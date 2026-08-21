@@ -4,4 +4,4 @@ numpy
 matplotlib
 anthropic
 openpyxl
-google
+google-genai
