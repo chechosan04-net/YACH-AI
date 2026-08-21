@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-from anthropic import Anthropic
+from google import genai
 
 st.set_page_config(page_title="Dashboard descriptivo con IA", layout="wide")
 
@@ -73,7 +73,7 @@ if archivo is not None:
 
         if st.button("Generar interpretación"):
             with st.spinner("Consultando a la IA..."):
-                cliente = Anthropic(api_key=st.secrets["ANTHROPIC_API_KEY"])
+                cliente = genai.Client(api_key=st.secrets["GEMINI_API_KEY"])
 
                 prompt = f"""
 Analiza las siguientes estadísticas descriptivas de la variable "{columna}":
@@ -85,12 +85,11 @@ tendencia central, dispersión y posibles valores atípicos. No inventes cifras
 que no aparezcan en los datos proporcionados.
 """
 
-                respuesta = cliente.messages.create(
-                    model="claude-sonnet-5",
-                    max_tokens=400,
-                    messages=[{"role": "user", "content": prompt}],
+                respuesta = cliente.models.generate_content(
+                    model="gemini-flash-latest",
+                    contents=prompt,
                 )
 
-                st.write(respuesta.content[0].text)
+                st.write(respuesta.text)
 else:
     st.info("Esperando que subas un archivo para comenzar el análisis.")
