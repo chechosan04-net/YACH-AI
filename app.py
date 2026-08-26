@@ -178,7 +178,7 @@ def obtener_cliente_ia():
 
 
 def generar_texto_ia(cliente, prompt):
-    respuesta = cliente.models.generate_content(model="gemini-flash-latest", contents=prompt)
+    respuesta = cliente.models.generate_content(model="gemini-3.6-flash", contents=prompt)
     return respuesta.text
 
 
