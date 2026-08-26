@@ -1,3 +1,13 @@
+"""
+YACH-AI · Dashboard de Visitantes de Museo
+Análisis descriptivo interactivo + interpretación en lenguaje natural con IA.
+
+Arquitectura (igual que la versión original, ampliada):
+  - utils.py         -> carga, limpieza y estadística (pandas/numpy). La IA
+                         NUNCA calcula estos números, solo los interpreta.
+  - app.py (este)     -> interfaz, filtros, visualizaciones y llamadas a IA.
+"""
+
 import io
 import numpy as np
 import pandas as pd
@@ -35,8 +45,25 @@ st.markdown(
     section[data-testid="stSidebar"] {{
         background-color: {COLOR_NAVY};
     }}
-    section[data-testid="stSidebar"] * {{
+    section[data-testid="stSidebar"] label,
+    section[data-testid="stSidebar"] p,
+    section[data-testid="stSidebar"] span,
+    section[data-testid="stSidebar"] h1,
+    section[data-testid="stSidebar"] h2,
+    section[data-testid="stSidebar"] h3,
+    section[data-testid="stSidebar"] .stMarkdown,
+    section[data-testid="stSidebar"] small {{
         color: #E7EAF2 !important;
+    }}
+    /* El visor del archivo subido y la zona de arrastre tienen fondo claro
+       propio: se restaura texto/íconos oscuros para que no queden invisibles */
+    section[data-testid="stSidebar"] [data-testid="stFileUploaderDropzone"],
+    section[data-testid="stSidebar"] [data-testid="stFileUploaderDropzone"] *,
+    section[data-testid="stSidebar"] [data-testid="stFileUploaderFile"],
+    section[data-testid="stSidebar"] [data-testid="stFileUploaderFile"] *,
+    section[data-testid="stSidebar"] [data-testid="stFileUploaderFileName"] {{
+        color: {COLOR_NAVY} !important;
+        fill: {COLOR_NAVY} !important;
     }}
     section[data-testid="stSidebar"] .stButton button {{
         background-color: {COLOR_GOLD};
@@ -44,6 +71,9 @@ st.markdown(
         border: none;
         font-weight: 600;
         width: 100%;
+    }}
+    section[data-testid="stSidebar"] .stButton button * {{
+        color: {COLOR_NAVY} !important;
     }}
     div[data-testid="stMetric"], .kpi-card {{
         background: #FFFFFF;
@@ -54,7 +84,7 @@ st.markdown(
     }}
     .kpi-title {{
         font-size: 0.78rem;
-        color: #6B7280;
+        color: #4B5568;
         text-transform: uppercase;
         letter-spacing: .04em;
     }}
@@ -66,7 +96,7 @@ st.markdown(
     }}
     .kpi-sub {{
         font-size: 0.75rem;
-        color: #8A93A6;
+        color: #5B6478;
         margin-top: 2px;
     }}
     h1, h2, h3 {{
@@ -224,9 +254,12 @@ with st.sidebar:
         ],
         default_index=0,
         styles={
-            "container": {"padding": "0", "background-color": "transparent"},
+            "container": {"padding": "0", "background-color": COLOR_NAVY},
             "icon": {"color": COLOR_GOLD, "font-size": "15px"},
-            "nav-link": {"font-size": "13.5px", "text-align": "left", "margin": "2px", "color": "#E7EAF2"},
+            "nav-link": {
+                "font-size": "13.5px", "text-align": "left", "margin": "2px",
+                "color": "#E7EAF2", "background-color": COLOR_NAVY,
+            },
             "nav-link-selected": {"background-color": COLOR_GOLD, "color": COLOR_NAVY},
         },
     )
@@ -252,6 +285,7 @@ with st.sidebar:
     if st.button("🔄 Reiniciar filtros"):
         for k in ["filtro_fechas", "filtro_dependencia", "filtro_pais", "filtro_departamento"]:
             st.session_state.pop(k, None)
+        st.toast("Filtros reiniciados ✅")
         st.rerun()
 
 # Aplicar filtros
